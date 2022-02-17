@@ -2,12 +2,12 @@ package com.codeop.recap.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
-import android.widget.Toast
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import coil.load
-import com.codeop.recap.MainActivity
 import com.codeop.recap.R
 import com.codeop.recap.data.ComicResponse
 import com.codeop.recap.databinding.FragmentComicsBinding
@@ -19,6 +19,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ComicsFragment : Fragment(R.layout.fragment_comics) {
+    companion object {
+        private const val CURRENT_COMIC_KEY = "current-comic"
+    }
+
     private lateinit var binding: FragmentComicsBinding
     private lateinit var favoritesRepository: FavoritesRepository
     private var currentComic: ComicResponse? = null
@@ -33,13 +37,15 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
         setHasOptionsMenu(true)
 
         CoroutineScope(Dispatchers.IO).launch {
-            ComicRepository.getNewestComic()?.let {
-                withContext(Dispatchers.Main) {
-                    currentComic = it
-                    setComic(it)
-                    setLikeIcon(it)
+            (savedInstanceState?.getParcelable(CURRENT_COMIC_KEY)
+                ?: ComicRepository.getNewestComic())
+                ?.let {
+                    withContext(Dispatchers.Main) {
+                        currentComic = it
+                        setComic(it)
+                        setLikeIcon(it)
+                    }
                 }
-            }
         }
 
         binding.btnNext.isEnabled = ComicRepository.comicNumber != ComicRepository.comicLimit
@@ -48,6 +54,10 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
         binding.btnRandom.setOnClickListener { switchComic(Direction.RANDOM) }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(CURRENT_COMIC_KEY, currentComic)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         this.menu = menu

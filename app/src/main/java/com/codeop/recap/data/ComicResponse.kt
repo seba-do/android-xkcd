@@ -1,5 +1,9 @@
 package com.codeop.recap.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class ComicResponse(
     val num: Int,
     val link: String,
@@ -12,4 +16,4 @@ data class ComicResponse(
     val day: String,
     val month: String,
     val year: String,
-)
+): Parcelable
