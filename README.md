@@ -30,3 +30,7 @@ Use all the stuff we learned until now to build an App to show and save comics f
 - SharedPreferences
 - Retrofit
 - Glide / Picasso / Coil
+
+## Part 2
+
+- Add and use Room to store the data
