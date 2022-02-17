@@ -14,4 +14,12 @@
         <!-- Customize your theme here. -->
         <item name="actionBarStyle">@style/Widget.App.ActionBar</item>
     </style>
+
+    <style name="Theme.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="colorPrimary">@color/blue_ateneo</item>
+        <item name="colorPrimaryDark">@color/blue_ateneo</item>
+        <item name="colorAccent">@color/gray_pastel_dark</item>
+        <item name="android:statusBarColor">@color/blue_ateneo</item>
+    </style>
 </resources>
