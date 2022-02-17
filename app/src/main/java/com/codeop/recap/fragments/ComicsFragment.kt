@@ -42,19 +42,6 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
             }
         }
 
-        binding.comic.setOnTouchListener { view, motionEvent ->
-            val gestureDetector =
-                GestureDetector(view.context, object : GestureDetector.SimpleOnGestureListener() {
-
-                    override fun onDoubleTap(e: MotionEvent?): Boolean {
-                        Toast.makeText(requireContext(), "Double Tap", Toast.LENGTH_SHORT).show()
-                        return super.onDoubleTap(e)
-                    }
-                })
-
-            gestureDetector.onTouchEvent(motionEvent)
-        }
-
         binding.btnNext.isEnabled = ComicRepository.comicNumber != ComicRepository.comicLimit
         binding.btnNext.setOnClickListener { switchComic(Direction.NEXT) }
         binding.btnPrevious.setOnClickListener { switchComic(Direction.PREVIOUS) }
