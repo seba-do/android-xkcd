@@ -9,14 +9,11 @@
         android:id="@+id/comicsFragment"
         android:name="com.codeop.recap.fragments.ComicsFragment"
         android:label="Comics"
-        tools:layout="@layout/fragment_comics">
-        <action
-            android:id="@+id/action_comicsFragment_to_favoritesFragment"
-            app:destination="@id/favoritesFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_comics" />
+
     <fragment
         android:id="@+id/favoritesFragment"
-        tools:layout="@layout/fragment_favorites"
         android:name="com.codeop.recap.fragments.FavoritesFragment"
-        android:label="Favorites" />
+        android:label="Favorites"
+        tools:layout="@layout/fragment_favorites" />
 </navigation>
