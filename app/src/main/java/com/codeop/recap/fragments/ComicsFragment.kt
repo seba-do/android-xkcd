@@ -36,6 +36,7 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
                 withContext(Dispatchers.Main) {
                     currentComic = it
                     setComic(it)
+                    setLikeIcon(it)
                 }
             }
         }
@@ -66,8 +67,11 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.favoritesFragment) {
-            findNavController().navigate(R.id.action_comicsFragment_to_favoritesFragment)
+        if (item.itemId == R.id.like_icon) {
+            currentComic?.let {
+                favoritesRepository.addComicAsFavorite(it)
+                setLikeIcon(it)
+            }
         }
 
         return true
@@ -82,6 +86,7 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
             }?.let {
                 withContext(Dispatchers.Main) {
                     setComic(it)
+                    setLikeIcon(it)
                     currentComic = it
                     binding.btnNext.isEnabled =
                         ComicRepository.comicNumber != ComicRepository.comicLimit
@@ -93,6 +98,15 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
     private fun setComic(comic: ComicResponse) {
         activity?.title = comic.title
         binding.comic.load(comic.img)
+    }
+
+    private fun setLikeIcon(comic: ComicResponse) {
+        menu?.findItem(R.id.like_icon)?.setIcon(
+            if (favoritesRepository.isComicFavorite(comic))
+                R.drawable.ic_favorite
+            else
+                R.drawable.ic_favorite_border
+        )
     }
 
     enum class Direction {

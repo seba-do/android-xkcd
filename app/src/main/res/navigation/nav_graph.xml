@@ -8,6 +8,7 @@
     <fragment
         android:id="@+id/comicsFragment"
         android:name="com.codeop.recap.fragments.ComicsFragment"
+        android:label="Comics"
         tools:layout="@layout/fragment_comics">
         <action
             android:id="@+id/action_comicsFragment_to_favoritesFragment"

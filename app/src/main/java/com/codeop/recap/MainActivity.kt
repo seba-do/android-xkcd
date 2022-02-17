@@ -6,12 +6,17 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.codeop.recap.databinding.ActivityMainBinding
+import com.codeop.recap.repositories.FavoritesRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,12 +26,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_host) as NavHostFragment
         val navController = navHostFragment.navController
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-    }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.fragment_host)
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        binding.bottomNav.setupWithNavController(navController)
     }
 }

@@ -22,6 +22,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        activity?.title = "Favorites"
 
         binding = FragmentFavoritesBinding.bind(view)
         favoritesRepository = FavoritesRepository.getInstance(requireContext())
