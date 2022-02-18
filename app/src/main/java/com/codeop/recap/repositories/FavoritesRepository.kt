@@ -1,12 +1,17 @@
 package com.codeop.recap.repositories
 
 import android.content.Context
-import com.codeop.recap.api.Retrofit
+import androidx.room.Room
 import com.codeop.recap.data.ComicResponse
+import com.codeop.recap.db.AppDatabase
+import com.codeop.recap.db.DatabaseSingleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FavoritesRepository private constructor(context: Context) {
     companion object {
-        private const val FAVORITES_DB = "favorites-db"
         private var instance: FavoritesRepository? = null
 
         fun getInstance(context: Context): FavoritesRepository {
@@ -16,33 +21,19 @@ class FavoritesRepository private constructor(context: Context) {
         }
     }
 
-    private val persistenceRepository = PersistenceRepository(context, FAVORITES_DB)
-    private val favoritesSet: MutableSet<Int> = mutableSetOf()
+    private val comicsDB = DatabaseSingleton.getInstance(context)
 
-    init {
-        favoritesSet.addAll(persistenceRepository.getAllValues())
+    suspend fun isComicFavorite(comic: ComicResponse): Boolean = comicsDB.favoriteDao().isFavorite(comic.asFavorite().id)
+
+    suspend fun addComicAsFavorite(comic: ComicResponse) {
+        comicsDB.favoriteDao().addFavorite(comic.asFavorite())
     }
 
-    fun isComicFavorite(comic: ComicResponse): Boolean = favoritesSet.contains(comic.num)
-
-    fun addComicAsFavorite(comic: ComicResponse) {
-        favoritesSet.add(comic.num)
-        persistenceRepository.writeInt(comic.num.toString(), comic.num)
+    suspend fun removeComicAsFavorite(comic: ComicResponse) {
+        comicsDB.favoriteDao().removeFavorite(comic.asFavorite())
     }
 
-    fun removeComicAsFavorite(comic: ComicResponse) {
-        favoritesSet.remove(comic.num)
-        persistenceRepository.deleteInt(comic.num.toString())
-    }
-
-    fun getAllFavorites() : List<ComicResponse> {
-        val result = mutableListOf<ComicResponse>()
-        persistenceRepository.getAllValues().forEach {
-            Retrofit.xkcdService.getSpecificComic(it).execute().body()?.let { comic ->
-                result.add(comic)
-            }
-        }
-
-        return result
+    suspend fun getAllFavorites(): List<ComicResponse> {
+        return comicsDB.favoriteDao().getFavorites()
     }
 }

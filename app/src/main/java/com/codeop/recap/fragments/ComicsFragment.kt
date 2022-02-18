@@ -2,10 +2,7 @@ package com.codeop.recap.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.fragment.app.Fragment
 import coil.load
 import com.codeop.recap.R
@@ -25,6 +22,8 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
 
     private lateinit var binding: FragmentComicsBinding
     private lateinit var favoritesRepository: FavoritesRepository
+    private lateinit var comicRepository: ComicRepository
+
     private var currentComic: ComicResponse? = null
     private var menu: Menu? = null
 
@@ -33,12 +32,13 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentComicsBinding.bind(view)
         favoritesRepository = FavoritesRepository.getInstance(requireContext())
+        comicRepository = ComicRepository.getInstance(requireContext())
 
         setHasOptionsMenu(true)
 
         CoroutineScope(Dispatchers.IO).launch {
             (savedInstanceState?.getParcelable(CURRENT_COMIC_KEY)
-                ?: ComicRepository.getNewestComic())
+                ?: comicRepository.restoreLastComic())
                 ?.let {
                     withContext(Dispatchers.Main) {
                         currentComic = it
@@ -48,7 +48,7 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
                 }
         }
 
-        binding.btnNext.isEnabled = ComicRepository.comicNumber != ComicRepository.comicLimit
+        binding.btnNext.isEnabled = comicRepository.comicNumber != comicRepository.comicLimit
         binding.btnNext.setOnClickListener { switchComic(Direction.NEXT) }
         binding.btnPrevious.setOnClickListener { switchComic(Direction.PREVIOUS) }
         binding.btnRandom.setOnClickListener { switchComic(Direction.RANDOM) }
@@ -67,8 +67,17 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.like_icon) {
             currentComic?.let {
-                favoritesRepository.addComicAsFavorite(it)
-                setLikeIcon(it)
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (favoritesRepository.isComicFavorite(it)) {
+                        favoritesRepository.removeComicAsFavorite(it)
+                    } else {
+                        favoritesRepository.addComicAsFavorite(it)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        setLikeIcon(it)
+                    }
+                }
             }
         }
 
@@ -78,16 +87,16 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
     private fun switchComic(direction: Direction) {
         CoroutineScope(Dispatchers.IO).launch {
             when (direction) {
-                Direction.NEXT -> ComicRepository.getNextComic()
-                Direction.PREVIOUS -> ComicRepository.getPreviousComic()
-                Direction.RANDOM -> ComicRepository.getRandomComic()
+                Direction.NEXT -> comicRepository.getNextComic()
+                Direction.PREVIOUS -> comicRepository.getPreviousComic()
+                Direction.RANDOM -> comicRepository.getRandomComic()
             }?.let {
                 withContext(Dispatchers.Main) {
                     setComic(it)
                     setLikeIcon(it)
                     currentComic = it
                     binding.btnNext.isEnabled =
-                        ComicRepository.comicNumber != ComicRepository.comicLimit
+                        comicRepository.comicNumber != comicRepository.comicLimit
                 }
             }
         }
@@ -99,12 +108,18 @@ class ComicsFragment : Fragment(R.layout.fragment_comics) {
     }
 
     private fun setLikeIcon(comic: ComicResponse) {
-        menu?.findItem(R.id.like_icon)?.setIcon(
-            if (favoritesRepository.isComicFavorite(comic))
-                R.drawable.ic_favorite
-            else
-                R.drawable.ic_favorite_border
-        )
+        CoroutineScope(Dispatchers.IO).launch {
+            val isFavorite = favoritesRepository.isComicFavorite(comic)
+
+            withContext(Dispatchers.Main) {
+                menu?.findItem(R.id.like_icon)?.setIcon(
+                    if (isFavorite)
+                        R.drawable.ic_favorite
+                    else
+                        R.drawable.ic_favorite_border
+                )
+            }
+        }
     }
 
     enum class Direction {

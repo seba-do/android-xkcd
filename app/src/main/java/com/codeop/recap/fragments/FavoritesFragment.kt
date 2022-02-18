@@ -28,7 +28,9 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
         favoritesRepository = FavoritesRepository.getInstance(requireContext())
 
         binding.comicList.adapter = ComicAdapter {
-            favoritesRepository.removeComicAsFavorite(it)
+            CoroutineScope(Dispatchers.IO).launch {
+                favoritesRepository.removeComicAsFavorite(it)
+            }
             updateListItems()
         }
 

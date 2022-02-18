@@ -2,8 +2,11 @@ package com.codeop.recap.repositories
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
+import com.codeop.recap.db.AppDatabase
 
 class PersistenceRepository(context: Context, dbName: String) {
+
 
     private val sharedPrefs: SharedPreferences =
         context.getSharedPreferences(dbName, Context.MODE_PRIVATE)
