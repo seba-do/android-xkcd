@@ -15,11 +15,6 @@ interface ComicFavoriteDao {
     @Delete
     suspend fun removeFavorite(favorite: ComicFavorite)
 
-//    @Query("SELECT * FROM ComicFavorite AS favorite " +
-//            "INNER JOIN ComicResponse AS comic ON comic.num = favorite.id " +
-//            "WHERE comic.num LIKE :num")
-//    suspend fun getFavorite(num: Int): ComicResponse?
-
     @Query("SELECT * FROM ComicFavorite AS favorite " +
             "INNER JOIN ComicResponse AS comic ON comic.num = favorite.id")
     suspend fun getFavorites(): List<ComicResponse>

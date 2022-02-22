@@ -24,7 +24,7 @@ class ComicRepository private constructor(context: Context) {
 
     private val comicsDB = DatabaseSingleton.getInstance(context)
 
-    suspend fun getNewestComic(): ComicResponse? {
+    private suspend fun getNewestComic(): ComicResponse? {
         return Retrofit.xkcdService.getNewestComic().execute().body()
             ?.also {
                 comicLimit = it.num
