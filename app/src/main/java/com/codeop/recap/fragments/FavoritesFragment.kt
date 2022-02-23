@@ -10,16 +10,11 @@ import com.codeop.recap.databinding.FragmentFavoritesBinding
 import com.codeop.recap.repositories.FavoritesRepository
 import com.codeop.recap.viewmodel.FavoritesViewModel
 import com.codeop.recap.viewmodel.FavoritesViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
 
     private lateinit var binding: FragmentFavoritesBinding
     private lateinit var viewModel: FavoritesViewModel
-//    private lateinit var favoritesRepository: FavoritesRepository
 
     private val adapter: ComicAdapter
         get() = binding.comicList.adapter as ComicAdapter
@@ -36,14 +31,9 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
         ).get(FavoritesViewModel::class.java)
 
         binding = FragmentFavoritesBinding.bind(view)
-//        favoritesRepository = FavoritesRepository.getInstance(requireContext())
 
         binding.comicList.adapter = ComicAdapter {
             viewModel.removeComicAsFavorite(it)
-//            CoroutineScope(Dispatchers.IO).launch {
-//                favoritesRepository.removeComicAsFavorite(it)
-//            }
-//            updateListItems()
         }
 
         viewModel.favorites.observe(viewLifecycleOwner) {
@@ -51,17 +41,5 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
         }
 
         viewModel.getFavorites()
-
-//        updateListItems()
     }
-
-//    private fun updateListItems() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            favoritesRepository.getAllFavorites().let {
-//                withContext(Dispatchers.Main) {
-//                    adapter.submitList(it)
-//                }
-//            }
-//        }
-//    }
 }

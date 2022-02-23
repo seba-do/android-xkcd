@@ -1,14 +1,8 @@
 package com.codeop.recap.repositories
 
 import android.content.Context
-import androidx.room.Room
 import com.codeop.recap.data.ComicResponse
-import com.codeop.recap.db.AppDatabase
 import com.codeop.recap.db.DatabaseSingleton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FavoritesRepository private constructor(context: Context) {
     companion object {
@@ -23,7 +17,8 @@ class FavoritesRepository private constructor(context: Context) {
 
     private val comicsDB = DatabaseSingleton.getInstance(context)
 
-    suspend fun isComicFavorite(comic: ComicResponse): Boolean = comicsDB.favoriteDao().isFavorite(comic.asFavorite().id)
+    suspend fun isComicFavorite(comic: ComicResponse): Boolean =
+        comicsDB.favoriteDao().isFavorite(comic.asFavorite().id)
 
     suspend fun addComicAsFavorite(comic: ComicResponse) {
         comicsDB.favoriteDao().addFavorite(comic.asFavorite())

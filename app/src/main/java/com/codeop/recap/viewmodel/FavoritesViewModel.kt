@@ -1,18 +1,17 @@
 package com.codeop.recap.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.codeop.recap.data.ComicResponse
 import com.codeop.recap.repositories.FavoritesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class FavoritesViewModel(
-    private val favoritesRepository: FavoritesRepository
-) : ViewModel() {
+class FavoritesViewModel(private val favoritesRepository: FavoritesRepository) : ViewModel() {
 
-    private val _favorites: MutableLiveData<List<ComicResponse>> = MutableLiveData(emptyList())
-    val favorites: LiveData<List<ComicResponse>> = _favorites
+    val favorites: MutableLiveData<List<ComicResponse>> = MutableLiveData(emptyList())
 
     fun removeComicAsFavorite(comic: ComicResponse) = viewModelScope.launch(Dispatchers.IO) {
         favoritesRepository.removeComicAsFavorite(comic)
@@ -21,10 +20,7 @@ class FavoritesViewModel(
 
     fun getFavorites() = viewModelScope.launch(Dispatchers.IO) {
         val result = favoritesRepository.getAllFavorites()
-
-        withContext(Dispatchers.Main) {
-            _favorites.value = result
-        }
+        favorites.postValue(result)
     }
 }
 
