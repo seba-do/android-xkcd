@@ -15,8 +15,6 @@ import kotlinx.coroutines.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var isComicLoaded = false
-    private var isTimerDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
