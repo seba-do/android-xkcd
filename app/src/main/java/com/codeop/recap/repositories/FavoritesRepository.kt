@@ -1,34 +1,26 @@
 package com.codeop.recap.repositories
 
-import android.content.Context
 import com.codeop.recap.data.ComicResponse
-import com.codeop.recap.db.DatabaseSingleton
+import com.codeop.recap.db.DBConnection
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class FavoritesRepository private constructor(context: Context) {
-    companion object {
-        private var instance: FavoritesRepository? = null
+class FavoritesRepository : KoinComponent {
 
-        fun getInstance(context: Context): FavoritesRepository {
-            return instance ?: run {
-                FavoritesRepository(context).also { instance = it }
-            }
-        }
-    }
-
-    private val comicsDB = DatabaseSingleton.getInstance(context)
+    private val comicsDB by inject<DBConnection>()
 
     suspend fun isComicFavorite(comic: ComicResponse): Boolean =
-        comicsDB.favoriteDao().isFavorite(comic.asFavorite().id)
+        comicsDB.instance.favoriteDao().isFavorite(comic.asFavorite().id)
 
     suspend fun addComicAsFavorite(comic: ComicResponse) {
-        comicsDB.favoriteDao().addFavorite(comic.asFavorite())
+        comicsDB.instance.favoriteDao().addFavorite(comic.asFavorite())
     }
 
     suspend fun removeComicAsFavorite(comic: ComicResponse) {
-        comicsDB.favoriteDao().removeFavorite(comic.asFavorite())
+        comicsDB.instance.favoriteDao().removeFavorite(comic.asFavorite())
     }
 
     suspend fun getAllFavorites(): List<ComicResponse> {
-        return comicsDB.favoriteDao().getFavorites()
+        return comicsDB.instance.favoriteDao().getFavorites()
     }
 }

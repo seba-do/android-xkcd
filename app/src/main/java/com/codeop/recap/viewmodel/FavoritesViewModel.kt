@@ -23,12 +23,3 @@ class FavoritesViewModel(private val favoritesRepository: FavoritesRepository) :
         favorites.postValue(result)
     }
 }
-
-class FavoritesViewModelFactory(
-    private val favoritesRepository: FavoritesRepository
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(FavoritesRepository::class.java)
-            .newInstance(favoritesRepository)
-    }
-}

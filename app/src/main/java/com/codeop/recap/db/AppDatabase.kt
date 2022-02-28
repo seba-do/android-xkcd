@@ -14,13 +14,6 @@ abstract class AppDatabase : RoomDatabase() {
 }
 
 
-object DatabaseSingleton {
-    private var instance: AppDatabase? = null
-
-    fun getInstance(context: Context): AppDatabase {
-        return instance ?: Room.databaseBuilder(context, AppDatabase::class.java, "comics").build()
-            .also {
-                instance = it
-            }
-    }
+class DBConnection(context: Context) {
+    val instance: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "comics").build()
 }

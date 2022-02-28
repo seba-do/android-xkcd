@@ -7,12 +7,14 @@ import com.codeop.recap.repositories.FavoritesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.random.Random
 
 class ComicViewModel(
     private val comicRepository: ComicRepository,
     private val favoritesRepository: FavoritesRepository
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
     private var comicLimit: Int = 0
     private var comicNumber: Int = 0
 
@@ -106,17 +108,5 @@ class ComicViewModel(
         withContext(Dispatchers.Main) {
             result?.let { setVariables(it) }
         }
-    }
-}
-
-class ComicViewModelFactory(
-    private val comicRepository: ComicRepository,
-    private val favoritesRepository: FavoritesRepository
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(
-            ComicRepository::class.java,
-            FavoritesRepository::class.java
-        ).newInstance(comicRepository, favoritesRepository)
     }
 }

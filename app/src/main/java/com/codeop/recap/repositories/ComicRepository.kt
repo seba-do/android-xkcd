@@ -1,33 +1,26 @@
 package com.codeop.recap.repositories
 
-import android.content.Context
 import com.codeop.recap.api.Retrofit
 import com.codeop.recap.data.ComicResponse
-import com.codeop.recap.db.DatabaseSingleton
+import com.codeop.recap.db.DBConnection
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class ComicRepository private constructor(context: Context) {
-    companion object {
-        private var instance: ComicRepository? = null
+class ComicRepository : KoinComponent {
 
-        fun getInstance(context: Context): ComicRepository {
-            return instance ?: run {
-                ComicRepository(context).also { instance = it }
-            }
-        }
-    }
-
-    private val comicsDB = DatabaseSingleton.getInstance(context)
+    private val comicsDB: DBConnection by inject()
 
     suspend fun getNewestComic(): ComicResponse? =
         Retrofit.xkcdService.getNewestComic().execute().body()
             ?.also {
-                if (!comicsDB.comicDao().isSaved(it.num)) {
-                    comicsDB.comicDao().addComic(it)
+                if (!comicsDB.instance.comicDao().isSaved(it.num)) {
+                    comicsDB.instance.comicDao().addComic(it)
                 }
             }
 
-    suspend fun getComic(number: Int): ComicResponse? = comicsDB.comicDao().getComic(number)
-        ?: Retrofit.xkcdService.getSpecificComic(number).execute().body()
-            ?.also { comicsDB.comicDao().addComic(it) }
+    suspend fun getComic(number: Int): ComicResponse? =
+        comicsDB.instance.comicDao().getComic(number)
+            ?: Retrofit.xkcdService.getSpecificComic(number).execute().body()
+                ?.also { comicsDB.instance.comicDao().addComic(it) }
 
 }
